@@ -39,11 +39,13 @@ export const storeUserData = async () => {
             }
         );
 
-        if (!createdUser.$id) redirect("/sign-in");
+        return createdUser;
     } catch (error) {
         console.error("Error storing user data:", error);
+        throw redirect("/sign-in"); // This needs to be thrown if user creation fails
     }
 };
+
 
 const getGooglePicture = async (accessToken: string) => {
     try {
@@ -84,7 +86,7 @@ export const logoutUser = async () => {
 export const getUser = async () => {
     try {
         const user = await account.get();
-        if (!user) return redirect("/sign-in");
+        if (!user) throw redirect("/sign-in");
 
         const { documents } = await database.listDocuments(
             appwriteConfig.databaseId,
@@ -95,9 +97,31 @@ export const getUser = async () => {
             ]
         );
 
-        return documents.length > 0 ? documents[0] : redirect("/sign-in");
+        if (documents.length === 0) {
+            throw redirect("/sign-in");
+        }
+
+        return documents[0];
     } catch (error) {
         console.error("Error fetching user:", error);
-        return null;
+        throw redirect("/sign-in");
     }
 };
+
+
+export const getAllUsers = async (limit: number, offset: number) => {
+    try {
+        const { documents: users, total } = await database.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            [Query.limit(limit), Query.offset(offset)]
+        )
+
+        if(total === 0) return { users: [], total };
+
+        return { users, total };
+    } catch (e) {
+        console.log('Error fetching users')
+        return { users: [], total: 0 }
+    }
+}
