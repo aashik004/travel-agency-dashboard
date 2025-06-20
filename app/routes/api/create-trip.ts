@@ -65,10 +65,13 @@ export const action = async({request}: ActionFunctionArgs) => {
     ...
     ]
     }`;
+
+
+
       const textResult = await genAI
           .getGenerativeModel({model:'gemini-2.0-flash'})
           .generateContent([prompt])
-        const trip = parseMakdownToJson(testResult.response.text());
+        const trip = parseMarkdownToJson(textResult.response.text());
 
         const imageResponse = await fetch(
             `https://api.unsplash.com/search/photos?query=${country} ${interests} ${travelStyle}&client_id=${unsplashApiKey}`
@@ -91,8 +94,11 @@ export const action = async({request}: ActionFunctionArgs) => {
         )
 
         return data({id: result.$id})
+
     } catch (e){
         console.log('Error generating travel plan: ', e)
+
+
     }
 
 }
