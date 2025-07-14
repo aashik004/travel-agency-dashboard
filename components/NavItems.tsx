@@ -18,7 +18,7 @@ const NavItems = ({ handleClick }: { handleClick?: () => void}) => {
         <section className="nav-items" >
            <Link to="/" className="link-logo">
                <img src="/assets/icons/logo.svg" alt="logo" className="size-[30px]" />
-               <h1>Tourvisto</h1>
+               <h1>AI Travel Planner</h1>
            </Link>
 
             <div className="container">
